@@ -1,0 +1,101 @@
+name: Проверка и публикация игры
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-${{ github.event.pull_request.number || 'production' }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Проверить и собрать
+        run: |
+          npm test
+          npm run lint
+          npm run build
+          cp -R dist "$RUNNER_TEMP/game-dist"
+      - name: Опубликовать превью Pull Request
+        env:
+          PREVIEW_DIR: pr-preview/pr-${{ github.event.pull_request.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git fetch origin gh-pages:gh-pages
+            git switch gh-pages
+          else
+            git switch --orphan gh-pages
+            git rm -rf . || true
+          fi
+          rm -rf "$PREVIEW_DIR"
+          mkdir -p "$PREVIEW_DIR"
+          cp -R "$RUNNER_TEMP/game-dist/." "$PREVIEW_DIR/"
+          touch .nojekyll
+          git add "$PREVIEW_DIR" .nojekyll
+          git commit -m "preview: PR #${{ github.event.pull_request.number }}" || exit 0
+          git push origin gh-pages
+
+  cleanup-preview:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Удалить только закрытое превью
+        env:
+          PREVIEW_DIR: pr-preview/pr-${{ github.event.pull_request.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages:gh-pages
+          git switch gh-pages
+          rm -rf "$PREVIEW_DIR"
+          git add -A "$PREVIEW_DIR"
+          git commit -m "cleanup: PR #${{ github.event.pull_request.number }}" || exit 0
+          git push origin gh-pages
+
+  production:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Проверить и собрать
+        run: |
+          npm test
+          npm run lint
+          npm run build
+          cp -R dist "$RUNNER_TEMP/game-dist"
+      - name: Опубликовать основную версию
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git fetch origin gh-pages:gh-pages
+            git switch gh-pages
+          else
+            git switch --orphan gh-pages
+            git rm -rf . || true
+          fi
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name pr-preview ! -name .nojekyll -exec rm -rf {} +
+          cp -R "$RUNNER_TEMP/game-dist/." .
+          touch .nojekyll
+          git add -A
+          git commit -m "deploy: ${GITHUB_SHA}" || exit 0
+          git push origin gh-pages
+
