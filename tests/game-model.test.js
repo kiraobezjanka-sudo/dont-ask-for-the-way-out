@@ -79,6 +79,29 @@ test("без ориентиров маршрут побега скрыт и се
   assert.equal(game.endingId, "wrongRoute");
 });
 
+test("следующая встреча с одним знанием упоминает только школу", () => {
+  const game = new GameModel();
+  game.start();
+  choosePath(game, [
+    "name-honest", "lost-radio", "ask-ribbon", "ask-reactor", "fear-honest",
+    "ask-bell", "guess-school", "promise-until-dawn", "refuse-box",
+  ]);
+  const ids = game.availableChoices().map((choice) => choice.id);
+  assert.equal(game.node.text, "Ты правильно назвал безопасное место за школой. Но это только одна часть пути.");
+  assert.ok(!ids.includes("solve-route"));
+  assert.ok(ids.includes("guess-wrong-route"));
+});
+
+test("следующая встреча с двумя знаниями упоминает оба ориентира", () => {
+  const game = new GameModel();
+  game.start();
+  choosePath(game, winningPath.slice(0, -1));
+  const ids = game.availableChoices().map((choice) => choice.id);
+  assert.equal(game.node.text, "Ты знаешь безопасное место за школой. И знаешь про сухой водосток.");
+  assert.ok(ids.includes("solve-route"));
+  assert.ok(!ids.includes("guess-wrong-route"));
+});
+
 test("пауза замораживает время и блокирует выбор", () => {
   const game = new GameModel();
   game.start(1000);
