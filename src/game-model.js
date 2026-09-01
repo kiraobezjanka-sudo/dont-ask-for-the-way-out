@@ -45,7 +45,13 @@ export class GameModel {
   }
 
   get node() {
-    return dialogue[this.nodeId];
+    const node = dialogue[this.nodeId];
+    const variant = node.textVariants?.find((candidate) => {
+      const hasRequirements = candidate.requires?.every((flag) => this.flags.has(flag)) ?? true;
+      const hasExcludedFlag = candidate.excludes?.some((flag) => this.flags.has(flag)) ?? false;
+      return hasRequirements && !hasExcludedFlag;
+    });
+    return variant ? { ...node, text: variant.text } : node;
   }
 
   availableChoices() {
