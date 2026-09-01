@@ -3,7 +3,7 @@ import { GameModel } from "./game-model.js";
 const model = new GameModel();
 const $ = (selector) => document.querySelector(selector);
 const screens = { start: $("#start-screen"), game: $("#game-screen"), ending: $("#ending-screen") };
-const intelFlags = { "#intel-wind": "knowsWind", "#intel-school": "knowsSchool", "#intel-culvert": "knowsCulvert" };
+const intelFlags = { "#intel-school": "knowsSchool", "#intel-culvert": "knowsCulvert" };
 let audio = null;
 let soundOn = false;
 let frameId = null;
@@ -82,7 +82,7 @@ function renderEnding(state) {
   $("#ending-text").textContent = state.ending.text;
   $("#ending-trust").textContent = `${state.trust}%`;
   $("#ending-danger").textContent = `${state.danger}%`;
-  $("#ending-intel").textContent = `${Object.values(intelFlags).filter((flag) => state.flags.includes(flag)).length} / 3`;
+  $("#ending-intel").textContent = `${Object.values(intelFlags).filter((flag) => state.flags.includes(flag)).length} / ${Object.keys(intelFlags).length}`;
   $("#ending-symbol").textContent = state.status === "won" ? "↗" : state.status === "lost" ? "☢" : "∞";
   document.body.classList.remove("high-danger");
   $("#restart-button").focus();
@@ -168,4 +168,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 render();
-

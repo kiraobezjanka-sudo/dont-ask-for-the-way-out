@@ -110,3 +110,8 @@ test("на каждом достижимом узле не более трёх �
   }
   assert.ok(game.availableChoices().length <= 3);
 });
+
+test("игра хранит только флаги с будущей проверкой", () => {
+  const storedFlags = new Set(Object.values(dialogue).flatMap((node) => node.choices.flatMap((choice) => choice.set ?? [])));
+  assert.deepEqual([...storedFlags].sort(), ["boxPromise", "knowsCulvert", "knowsSchool"]);
+});

@@ -4,6 +4,7 @@
 
 - [Концепция и границы](.agents/concept.md)
 - [Правила игры](.agents/gameplay.md)
+- [Память выборов](.agents/game-state.md)
 - [Персонажи и NPC](.agents/characters.md)
 - [Управление и доступность](.agents/controls.md)
 - [Технологии и структура](.agents/structure.md)
