@@ -88,14 +88,16 @@ function renderEnding(state) {
   $("#restart-button").focus();
 }
 
-function togglePause(forceResume = false) {
+function togglePause(forceResume = false, restoreChoiceFocus = true) {
   if (model.status === "running" && !forceResume) model.pause();
   else if (model.status === "paused") model.resume();
   else return;
   const paused = model.status === "paused";
   $("#pause-overlay").hidden = !paused;
   $("#game-screen").inert = paused;
-  if (paused) $("#resume-button").focus(); else $("#choices button")?.focus();
+  if (paused) $("#resume-button").focus();
+  else if (restoreChoiceFocus) $("#choices button")?.focus();
+  else $("#resume-button").blur();
 }
 
 function toggleLog(open = null) {
@@ -145,7 +147,7 @@ function escapeHtml(value) {
 $("#start-button").addEventListener("click", startGame);
 $("#restart-button").addEventListener("click", startGame);
 $("#pause-button").addEventListener("click", () => togglePause());
-$("#resume-button").addEventListener("click", () => togglePause(true));
+$("#resume-button").addEventListener("click", () => togglePause(true, false));
 $("#log-button").addEventListener("click", () => toggleLog());
 $("#close-log").addEventListener("click", () => toggleLog(false));
 $("#sound-button").addEventListener("click", () => {
