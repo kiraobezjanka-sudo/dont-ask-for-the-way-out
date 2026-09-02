@@ -7,6 +7,8 @@ const intelFlags = { "#intel-school": "knowsSchool", "#intel-culvert": "knowsCul
 let audio = null;
 let soundOn = false;
 let frameId = null;
+let staleSpeechText = "";
+let holdSpeechAfterPause = false;
 
 function showScreen(name) {
   Object.entries(screens).forEach(([key, element]) => element.classList.toggle("is-visible", key === name));
@@ -15,6 +17,8 @@ function showScreen(name) {
 function startGame() {
   model.reset();
   model.start();
+  staleSpeechText = "";
+  holdSpeechAfterPause = false;
   showScreen("game");
   render();
   startClock();
@@ -31,7 +35,13 @@ function render() {
   $("#step-label").textContent = `РАЗГОВОР ${String(node.step).padStart(2, "0")} / 10`;
   $("#scene-kicker").textContent = node.kicker.toUpperCase();
   $("#speaker-name").textContent = node.speaker.toUpperCase();
-  $("#speech-text").textContent = node.text;
+  if (holdSpeechAfterPause && staleSpeechText) {
+    $("#speech-text").textContent = staleSpeechText;
+    holdSpeechAfterPause = false;
+  } else {
+    $("#speech-text").textContent = node.text;
+    staleSpeechText = node.text;
+  }
   $("#trust-value").textContent = `${state.trust}%`;
   $("#danger-value").textContent = `${state.danger}%`;
   $("#trust-fill").style.width = `${state.trust}%`;
@@ -90,7 +100,10 @@ function renderEnding(state) {
 
 function togglePause(forceResume = false) {
   if (model.status === "running" && !forceResume) model.pause();
-  else if (model.status === "paused") model.resume();
+  else if (model.status === "paused") {
+    model.resume();
+    holdSpeechAfterPause = true;
+  }
   else return;
   const paused = model.status === "paused";
   $("#pause-overlay").hidden = !paused;
