@@ -1,0 +1,42 @@
+name: "Предложить улучшение"
+description: "Предложите новую механику, изменение интерфейса или другое улучшение"
+title: "[Идея]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за идею! Опишите желаемый результат и пользу для игрока.
+
+  - type: checkboxes
+    id: existing-request
+    attributes:
+      label: "Проверка существующих обращений"
+      options:
+        - label: "Я проверил(а), что похожее улучшение ещё не предложено."
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Какую проблему решает предложение?"
+      description: "Расскажите, что сейчас неудобно, непонятно или ограничивает игру."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Предлагаемое решение"
+      description: "Опишите, как должно работать улучшение с точки зрения игрока."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Альтернативы и дополнительный контекст"
+      description: "Добавьте другие варианты, примеры, эскизы или ссылки, если они есть."
+    validations:
+      required: false
