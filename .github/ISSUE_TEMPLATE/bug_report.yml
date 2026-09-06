@@ -1,0 +1,105 @@
+name: "Сообщить об ошибке"
+description: "Расскажите о воспроизводимой проблеме в игре"
+title: "[Баг]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за сообщение! Заполните поля ниже — так ошибку будет проще воспроизвести и исправить.
+
+  - type: checkboxes
+    id: existing-issue
+    attributes:
+      label: "Проверка существующих обращений"
+      options:
+        - label: "Я проверил(а), что такая ошибка ещё не зарегистрирована."
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Описание ошибки"
+      description: "Кратко опишите, что работает неправильно."
+      placeholder: "Например: при нажатии Escape игра не ставится на паузу."
+    validations:
+      required: true
+
+  - type: textarea
+    id: preconditions
+    attributes:
+      label: "Условия возникновения"
+      description: "Укажите состояние игры перед воспроизведением: новая сессия, сцена, сделанные выборы и другие важные условия."
+      placeholder: "Запущена новая игровая сессия; конкретная сцена и предыдущие выборы значения не имеют."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: "Шаги для воспроизведения"
+      description: "Перечислите точную последовательность действий."
+      placeholder: |
+        1. Открыть игру.
+        2. Начать новую сессию.
+        3. Нажать Escape.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: "Ожидаемый результат"
+      placeholder: "Игра ставится на паузу."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-result
+    attributes:
+      label: "Фактический результат"
+      placeholder: "Игра не реагирует на клавишу и продолжается."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reproduction-rate
+    attributes:
+      label: "Частота воспроизведения"
+      options:
+        - "1 из 3 попыток"
+        - "2 из 3 попыток"
+        - "3 из 3 попыток"
+        - "Ошибка возникает время от времени"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: "Браузер и версия"
+      description: "Например: Chrome 140, Firefox 142, Safari 19."
+      placeholder: "Chrome 140"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: "Устройство"
+      options:
+        - "Компьютер"
+        - "Телефон"
+        - "Планшет"
+        - "Другое"
+    validations:
+      required: true
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: "Скриншоты, видео или дополнительная информация"
+      description: "Перетащите сюда файлы или добавьте сведения, которые помогут разобраться в проблеме."
+    validations:
+      required: false
